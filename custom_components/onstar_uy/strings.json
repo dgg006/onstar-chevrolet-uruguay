@@ -1,0 +1,62 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Conectar cuenta",
+        "description": "Probada en Uruguay; otros países de Latinoamérica no están verificados. Los valores del cliente vienen preconfigurados.",
+        "data": {
+          "username": "Correo",
+          "password": "Contraseña"
+        },
+        "sections": {
+          "advanced": {
+            "name": "Configuración avanzada",
+            "description": "Cliente de la app. Al cambiar el identificador, ingresá también su clave correspondiente. Dejar la clave vacía conserva la actual.",
+            "data": {
+              "client_id": "Identificador del cliente",
+              "client_secret": "Clave de la aplicación",
+              "app_version": "Versión de la aplicación"
+            }
+          }
+        }
+      },
+      "select_vehicle": {
+        "title": "Elegir vehículo",
+        "description": "Elegí el vehículo que querés agregar.",
+        "data": {
+          "vin": "Vehículo"
+        }
+      },
+      "reconfigure": {
+        "title": "Ajustar configuración",
+        "description": "Dejá la contraseña vacía para conservarla. Los cambios se comprueban antes de guardar; no se envían órdenes al vehículo.",
+        "data": {
+          "password": "Nueva contraseña",
+          "scan_interval": "Intervalo de consulta (segundos)",
+          "auto_refresh": "Solicitar datos nuevos automáticamente"
+        },
+        "sections": {
+          "advanced": {
+            "name": "Configuración avanzada",
+            "description": "Cliente de la app. Al cambiar el identificador, ingresá también su clave correspondiente. Dejar la clave vacía conserva la actual.",
+            "data": {
+              "client_id": "Identificador del cliente",
+              "client_secret": "Clave de la aplicación",
+              "app_version": "Versión de la aplicación"
+            }
+          }
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "No se pudo acceder a OnStar. Revisá las credenciales y la conexión. Los cambios no se guardaron.",
+      "select_vehicle": "Elegí un vehículo de esta cuenta.",
+      "no_vehicles": "La cuenta no devolvió vehículos disponibles.",
+      "client_key_error": "Revisá la pareja de identificador y clave y la versión. Si cambiás el identificador, completá también su clave."
+    },
+    "abort": {
+      "single_instance_allowed": "Esta versión admite una cuenta.",
+      "reconfigure_successful": "Configuración actualizada."
+    }
+  }
+}

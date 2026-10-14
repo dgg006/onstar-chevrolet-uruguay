@@ -1,0 +1,25 @@
+# Private investigation/configuration never belongs in this repository.
+work/
+outputs/
+private/
+.env
+.env.*
+!.env.example
+secrets.yaml
+*private*.json
+*tokens*.json
+*session*.json
+*.har
+*.apk
+*.log
+*.db
+*.db-*
+*.pem
+*.key
+*.zip
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+.storage/
+onstar_uy_private.json

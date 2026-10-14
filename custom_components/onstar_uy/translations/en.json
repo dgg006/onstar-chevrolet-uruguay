@@ -1,0 +1,62 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connect account",
+        "description": "Tested in Uruguay. Other Latin American countries are unverified. Application defaults are provided.",
+        "data": {
+          "username": "Email",
+          "password": "Password"
+        },
+        "sections": {
+          "advanced": {
+            "name": "Advanced configuration",
+            "description": "Use the client ID and signing key from the same app version. A blank key preserves the current value.",
+            "data": {
+              "client_id": "Client ID",
+              "client_secret": "Application signing key",
+              "app_version": "Application version"
+            }
+          }
+        }
+      },
+      "select_vehicle": {
+        "title": "Choose vehicle",
+        "description": "Select the vehicle to add.",
+        "data": {
+          "vin": "Vehicle"
+        }
+      },
+      "reconfigure": {
+        "title": "Adjust configuration",
+        "description": "Leave the password blank to keep it. Changes are validated before saving, without vehicle commands.",
+        "data": {
+          "password": "New password",
+          "scan_interval": "Polling interval (seconds)",
+          "auto_refresh": "Request fresh vehicle data automatically"
+        },
+        "sections": {
+          "advanced": {
+            "name": "Advanced configuration",
+            "description": "Use the client ID and signing key from the same app version. A blank key preserves the current value.",
+            "data": {
+              "client_id": "Client ID",
+              "client_secret": "Application signing key",
+              "app_version": "Application version"
+            }
+          }
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Cannot connect to OnStar. Check credentials and connectivity. Changes were not saved.",
+      "select_vehicle": "Select a vehicle from this account.",
+      "no_vehicles": "No available vehicles were returned.",
+      "client_key_error": "Check the client ID, matching signing key and app version. A changed client ID requires its corresponding key."
+    },
+    "abort": {
+      "single_instance_allowed": "Only one account is supported.",
+      "reconfigure_successful": "Configuration updated."
+    }
+  }
+}
