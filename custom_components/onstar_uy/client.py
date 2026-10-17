@@ -172,7 +172,7 @@ class OnStarClient:
         vehicles = self.get("/api/v1/account/vehicles").get("vehicles", {}).get("vehicle", [])
         return [vehicles] if isinstance(vehicles, dict) else vehicles
 
-    def control(self, vin: str, action: str, timeout: float = 75, interval: float = 3) -> str:
+    def control(self, vin: str, action: str, timeout: float = 180, interval: float = 5) -> str:
         """Send one physical command, without retrying an uncertain submission.
 
         Cancellation aliases use the same observed cancelAlert route. Command

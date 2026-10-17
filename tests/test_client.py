@@ -17,6 +17,30 @@ def session(scope='onstar gmoc priv', expires=1799):
 
 
 class ClientTests(unittest.TestCase):
+    def test_slow_control_can_complete_after_old_75_second_limit(self):
+        c = self.make_client()
+        clock = [0.0]
+        c._token, c._expires = 'test-token', 1000
+        def request(path, **kwargs):
+            if kwargs.get('method') == 'POST':
+                return 202, '{"requestId":"test-request"}'
+            return 200, json.dumps({'status':'SUCCESS' if clock[0] >= 90 else 'IN_PROGRESS'})
+        c._request = Mock(side_effect=request)
+        with patch.object(client.time,'monotonic',side_effect=lambda:clock[0]), patch.object(client.time,'sleep',side_effect=lambda seconds:clock.__setitem__(0,clock[0]+seconds)):
+            self.assertEqual(c.control('test-vin','lock'),'SUCCESS')
+        self.assertEqual(clock[0],90)
+        self.assertEqual(sum(call.kwargs.get('method')=='POST' for call in c._request.call_args_list),1)
+        self.assertLessEqual(c._request.call_count,20)
+
+    def test_backend_timeout_is_not_overridden_by_longer_local_wait(self):
+        c = self.make_client()
+        c._token, c._expires = 'test-token',time.monotonic()+1000
+        c._request = Mock(side_effect=[(202,'{"requestId":"test-request"}'),(200,'{"status":"TIMEOUT"}')])
+        with patch.object(client.time,'sleep') as sleep, self.assertRaises(client.OnStarError):
+            c.control('test-vin','lock')
+        sleep.assert_not_called()
+        self.assertEqual(c._request.call_count,2)
+
     def test_headers_use_configured_app_version(self):
         c = client.OnStarClient('test@example.invalid','test-password','test-key','test-device',app_version='8.11.0')
         response = Mock()
