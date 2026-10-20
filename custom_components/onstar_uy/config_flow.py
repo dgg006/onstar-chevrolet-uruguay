@@ -26,7 +26,7 @@ class OnStarConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             values = dict(user_input)
             values.setdefault("device_id", str(uuid.uuid4()))
             values.setdefault("client_id", APP_CLIENT_ID)
-            values.setdefault("scan_interval", 900)
+            values.setdefault("scan_interval", 1800)
             try:
                 values = await self._apply_advanced(values)
                 client = self._client(values)
@@ -137,7 +137,7 @@ class OnStarConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 errors["base"] = "cannot_connect"
         return self.async_show_form(step_id="reconfigure", data_schema=vol.Schema({
             vol.Optional("password"): TextSelector(TextSelectorConfig(type=TextSelectorType.PASSWORD)),
-            vol.Optional("scan_interval", default=entry.data.get("scan_interval", 900)):
+            vol.Optional("scan_interval", default=entry.data.get("scan_interval", 1800)):
                 vol.All(vol.Coerce(int), vol.Range(min=300, max=86400)),
             vol.Optional("auto_refresh", default=entry.data.get("auto_refresh", True)): bool,
             vol.Optional("advanced"): self._advanced_schema(await self._form_configuration(entry.data)),

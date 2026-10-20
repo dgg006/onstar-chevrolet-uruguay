@@ -25,7 +25,7 @@ CONFIG_SCHEMA = vol.Schema({
         vol.Optional("client_id", default="OMB_CVY_AND_8T0"): cv.string,
         vol.Optional("app_version", default="8.19.0"): cv.string,
         vol.Optional("vin"): cv.string,
-        vol.Optional("scan_interval", default=900): vol.All(vol.Coerce(int), vol.Range(min=300)),
+        vol.Optional("scan_interval", default=1800): vol.All(vol.Coerce(int), vol.Range(min=300)),
         vol.Optional("auto_refresh", default=True): cv.boolean,
     }),
 }, extra=vol.ALLOW_EXTRA)

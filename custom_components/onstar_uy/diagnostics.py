@@ -10,6 +10,6 @@ async def async_get_config_entry_diagnostics(hass, entry):
         "loaded": bool(runtime),
         "last_update_success": bool(coordinator and coordinator.last_update_success),
         "app_version": getattr(client, "app_version", None),
-        "scan_interval": entry.data.get("scan_interval", 900),
+        "scan_interval": entry.data.get("scan_interval", 1800),
         "auto_refresh": entry.data.get("auto_refresh", True),
     }

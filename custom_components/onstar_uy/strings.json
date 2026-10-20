@@ -2,61 +2,61 @@
   "config": {
     "step": {
       "user": {
-        "title": "Conectar cuenta",
-        "description": "Probada en Uruguay; otros países de Latinoamérica no están verificados. Los valores del cliente vienen preconfigurados.",
+        "title": "Connect account",
+        "description": "Tested in Uruguay. Other Latin American countries are unverified. Application defaults are provided.",
         "data": {
-          "username": "Correo",
-          "password": "Contraseña"
+          "username": "Email",
+          "password": "Password"
         },
         "sections": {
           "advanced": {
-            "name": "Configuración avanzada",
-            "description": "Cliente de la app. Al cambiar el identificador, ingresá también su clave correspondiente. Dejar la clave vacía conserva la actual.",
+            "name": "Advanced configuration",
+            "description": "Use the client ID and signing key from the same app version. A blank key preserves the current value.",
             "data": {
-              "client_id": "Identificador del cliente",
-              "client_secret": "Clave de la aplicación",
-              "app_version": "Versión de la aplicación"
+              "client_id": "Client ID",
+              "client_secret": "Application signing key",
+              "app_version": "Application version"
             }
           }
         }
       },
       "select_vehicle": {
-        "title": "Elegir vehículo",
-        "description": "Elegí el vehículo que querés agregar.",
+        "title": "Choose vehicle",
+        "description": "Select the vehicle to add.",
         "data": {
-          "vin": "Vehículo"
+          "vin": "Vehicle"
         }
       },
       "reconfigure": {
-        "title": "Ajustar configuración",
-        "description": "Dejá la contraseña vacía para conservarla. Los cambios se comprueban antes de guardar; no se envían órdenes al vehículo.",
+        "title": "Adjust configuration",
+        "description": "Leave the password blank to keep it. Changes are validated before saving, without vehicle commands.",
         "data": {
-          "password": "Nueva contraseña",
-          "scan_interval": "Intervalo de consulta (segundos)",
-          "auto_refresh": "Solicitar datos nuevos automáticamente"
+          "password": "New password",
+          "scan_interval": "Polling interval (seconds)",
+          "auto_refresh": "Request fresh vehicle data automatically"
         },
         "sections": {
           "advanced": {
-            "name": "Configuración avanzada",
-            "description": "Cliente de la app. Al cambiar el identificador, ingresá también su clave correspondiente. Dejar la clave vacía conserva la actual.",
+            "name": "Advanced configuration",
+            "description": "Use the client ID and signing key from the same app version. A blank key preserves the current value.",
             "data": {
-              "client_id": "Identificador del cliente",
-              "client_secret": "Clave de la aplicación",
-              "app_version": "Versión de la aplicación"
+              "client_id": "Client ID",
+              "client_secret": "Application signing key",
+              "app_version": "Application version"
             }
           }
         }
       }
     },
     "error": {
-      "cannot_connect": "No se pudo acceder a OnStar. Revisá las credenciales y la conexión. Los cambios no se guardaron.",
-      "select_vehicle": "Elegí un vehículo de esta cuenta.",
-      "no_vehicles": "La cuenta no devolvió vehículos disponibles.",
-      "client_key_error": "Revisá la pareja de identificador y clave y la versión. Si cambiás el identificador, completá también su clave."
+      "cannot_connect": "Cannot connect to OnStar. Check credentials and connectivity. Changes were not saved.",
+      "select_vehicle": "Select a vehicle from this account.",
+      "no_vehicles": "No available vehicles were returned.",
+      "client_key_error": "Check the client ID, matching signing key and app version. A changed client ID requires its corresponding key."
     },
     "abort": {
-      "single_instance_allowed": "Esta versión admite una cuenta.",
-      "reconfigure_successful": "Configuración actualizada."
+      "single_instance_allowed": "Only one account is supported.",
+      "reconfigure_successful": "Configuration updated."
     }
   }
 }

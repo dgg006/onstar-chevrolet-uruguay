@@ -1,5 +1,7 @@
 # OnStar Chevrolet Uruguay
 
+<img src="https://raw.githubusercontent.com/dgg006/onstar-chevrolet-uruguay/main/custom_components/onstar_uy/brand/icon.png" alt="Icono de OnStar Chevrolet Uruguay" width="96" height="96">
+
 Integración comunitaria de Chevrolet OnStar para Home Assistant, instalable mediante HACS.
 
 **Probada con el servidor de OnStar de Uruguay. La compatibilidad con otros países de Latinoamérica no está comprobada.** Las funciones disponibles dependen del vehículo, la cuenta y el plan contratado. No es una integración oficial de GM, Chevrolet ni OnStar.
@@ -57,7 +59,7 @@ Las instalaciones anteriores conservan su configuración. También se admite el 
 
 ## Actualización y opciones
 
-Los datos se solicitan al vehículo cada 15 minutos. El botón **Actualizar datos** permite una solicitud manual. El servidor puede entregar información anterior: cada lectura conserva la fecha informada por el vehículo.
+En instalaciones nuevas, los datos se solicitan al vehículo cada 30 minutos. Las instalaciones existentes conservan su intervalo configurado. El botón **Actualizar datos** permite una solicitud manual. El servidor puede entregar información anterior: cada lectura conserva la fecha informada por el vehículo.
 
 Desde **Reconfigurar** se puede cambiar la contraseña, el intervalo —mínimo 5 minutos— y la solicitud automática de datos nuevos. Si esta última se desactiva, se siguen consultando los datos guardados por GM y se conserva el botón de actualización manual.
 
@@ -78,6 +80,18 @@ Los decimales de presentación se pueden ajustar en Home Assistant; los valores 
 
 Que el servidor anuncie una capacidad no garantiza que entregue una lectura. Los sensores experimentales se pueden desactivar individualmente.
 
+## Demoras y errores de OnStar
+
+- Los controles pueden tardar más de un minuto. La integración espera hasta 180 segundos y consulta el resultado cada 5 segundos; no vuelve a enviar la orden física.
+- Un resultado no confirmado no equivale a que el auto esté bloqueado o desbloqueado. Comprobar el vehículo si la acción es importante.
+- Si aparece HTTP 429, el servicio está limitando solicitudes. Evitar pulsar repetidamente, aumentar el intervalo o desactivar temporalmente la solicitud automática de datos nuevos desde Reconfigurar.
+- Si también falla myChevrolet, comprobar cobertura, estado del servicio y permisos del plan. Cambiar la configuración del cliente no soluciona por sí solo un problema de comunicación con el vehículo.
+- Las fechas de las lecturas corresponden a los datos entregados por GM, que pueden ser anteriores a la última consulta.
+
+## Desinstalación
+
+Eliminar la entrada de OnStar Chevrolet Uruguay en Ajustes → Dispositivos y servicios. Después se pueden quitar sus archivos desde HACS y reiniciar Home Assistant. Esto elimina la configuración de esta integración en HA; no cancela la cuenta ni el plan de OnStar.
+
 ## Instalación sin HACS
 
 Copiar `custom_components/onstar_uy` a la carpeta `custom_components` de Home Assistant, reiniciar y agregar la integración desde la interfaz.
@@ -88,4 +102,4 @@ Las credenciales personales se guardan en la configuración de tu Home Assistant
 
 Para informar un problema, indicar versiones, país y mensaje de error, sin contraseñas, tokens, VIN ni ubicación. Consultar [SECURITY.md](SECURITY.md) y [CHANGELOG.md](CHANGELOG.md).
 
-Los nombres Chevrolet y OnStar identifican los servicios compatibles y no implican afiliación con sus propietarios.
+Los nombres Chevrolet y OnStar y el emblema de Chevrolet identifican los servicios compatibles y no implican afiliación ni aprobación de sus propietarios. La licencia del código no concede derechos sobre esas marcas.
