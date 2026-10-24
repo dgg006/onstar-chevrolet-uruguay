@@ -46,17 +46,26 @@
             }
           }
         }
+      },
+      "reauth_confirm": {
+        "title": "Volver a autenticar OnStar",
+        "description": "Ingresá la contraseña actual de tu cuenta myChevrolet.",
+        "data": {
+          "password": "Contraseña"
+        }
       }
     },
     "error": {
       "cannot_connect": "No se pudo acceder a OnStar. Revisá las credenciales y la conexión. Los cambios no se guardaron.",
       "select_vehicle": "Elegí un vehículo de esta cuenta.",
       "no_vehicles": "La cuenta no devolvió vehículos disponibles.",
-      "client_key_error": "Revisá la pareja de identificador y clave y la versión. Si cambiás el identificador, completá también su clave."
+      "client_key_error": "Revisá la pareja de identificador y clave y la versión. Si cambiás el identificador, completá también su clave.",
+      "invalid_auth": "OnStar rechazó las credenciales. Comprobá la contraseña."
     },
     "abort": {
       "single_instance_allowed": "Esta versión admite una cuenta.",
-      "reconfigure_successful": "Configuración actualizada."
+      "reconfigure_successful": "Configuración actualizada.",
+      "reauth_successful": "Autenticación actualizada correctamente."
     }
   }
 }

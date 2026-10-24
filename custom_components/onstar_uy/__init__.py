@@ -9,10 +9,10 @@ except ImportError:
     import voluptuous as vol
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
-from homeassistant.exceptions import ConfigEntryNotReady
+from homeassistant.exceptions import ConfigEntryAuthFailed, ConfigEntryError, ConfigEntryNotReady
 
-from .client import OnStarError, health_readings
-from .credentials import KEY_FILENAME, make_client
+from .client import OnStarAuthError, OnStarError, health_readings
+from .credentials import KEY_FILENAME, SigningKeyError, make_client
 
 DOMAIN = "onstar_uy"
 LOGGER = logging.getLogger(__name__)
@@ -52,11 +52,13 @@ async def async_setup_entry(hass, entry):
             vehicle = vehicles[0]
             vin = vehicle.get("vin")
         else:
-            LOGGER.error("Configurá el VIN para seleccionar uno de los vehículos de la cuenta")
-            return False
+            raise ConfigEntryError("Configurá el VIN para seleccionar uno de los vehículos de la cuenta")
         if not vehicle or not vin:
-            LOGGER.error("El vehículo configurado no aparece en esta cuenta")
-            return False
+            raise ConfigEntryError("El vehículo configurado no aparece en esta cuenta")
+    except SigningKeyError as error:
+        raise ConfigEntryError(str(error)) from error
+    except OnStarAuthError as error:
+        raise ConfigEntryAuthFailed(str(error)) from error
     except OnStarError as error:
         raise ConfigEntryNotReady(str(error)) from error
 
@@ -82,11 +84,15 @@ async def async_setup_entry(hass, entry):
                     if readings.get(key, {}).get("value") is None:
                         readings[key] = value
                 extra_status = "DATOS_RECIBIDOS" if extra else "SIN_DATOS"
+            except OnStarAuthError:
+                raise
             except OnStarError as error:
                 LOGGER.debug("Consulta experimental no disponible: %s", error)
                 extra_status = "ERROR"
             try:
                 position = await hass.async_add_executor_job(client.location, vin)
+            except OnStarAuthError:
+                raise
             except OnStarError as error:
                 LOGGER.debug("Ubicación OnStar no disponible: %s", error)
                 position = None
@@ -95,6 +101,8 @@ async def async_setup_entry(hass, entry):
             state["last_location"] = position
             return {"readings": readings, "location": position, "extra_status": extra_status,
                     "refresh": {key: refresh[key] for key in ("health", "location")}}
+        except OnStarAuthError as error:
+            raise ConfigEntryAuthFailed(str(error)) from error
         except OnStarError as error:
             raise UpdateFailed(str(error)) from error
 
@@ -106,7 +114,7 @@ async def async_setup_entry(hass, entry):
     await coordinator.async_config_entry_first_refresh()
     hass.data.setdefault(DOMAIN, {})[entry.entry_id] = {
         "coordinator": coordinator, "vin": vin, "vehicle": vehicle, "state": state,
-        "client": client, "control_lock": asyncio.Lock()}
+        "client": client, "entry": entry, "control_lock": asyncio.Lock()}
     await hass.config_entries.async_forward_entry_setups(entry, ["sensor", "binary_sensor", "device_tracker", "button"])
     return True
 

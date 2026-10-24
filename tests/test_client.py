@@ -17,6 +17,26 @@ def session(scope='onstar gmoc priv', expires=1799):
 
 
 class ClientTests(unittest.TestCase):
+    def test_token_rejections_are_authentication_errors(self):
+        for status in (400, 401, 403):
+            with self.subTest(status=status):
+                c = self.make_client()
+                c._token = 'old-token'
+                c._request = Mock(return_value=(status, 'private response'))
+                with self.assertRaises(client.OnStarAuthError) as raised:
+                    c.login()
+                self.assertNotIn('private response', str(raised.exception))
+                self.assertIsNone(c._token)
+                self.assertEqual(c._request.call_count, 1)
+
+    def test_token_server_errors_are_not_authentication_errors(self):
+        for status in (429, 500, 503):
+            c = self.make_client()
+            c._request = Mock(return_value=(status, '{}'))
+            with self.assertRaises(client.OnStarError) as raised:
+                c.login()
+            self.assertNotIsInstance(raised.exception, client.OnStarAuthError)
+
     def test_slow_control_can_complete_after_old_75_second_limit(self):
         c = self.make_client()
         clock = [0.0]

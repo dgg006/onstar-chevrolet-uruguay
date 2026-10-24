@@ -10,7 +10,7 @@ from homeassistant.data_entry_flow import section
 from homeassistant.helpers.selector import TextSelector, TextSelectorConfig, TextSelectorType
 
 from . import DOMAIN
-from .client import OnStarError
+from .client import OnStarAuthError, OnStarError
 from .const import APP_CLIENT_ID, APP_DEFAULTS
 from .credentials import KEY_FILENAME, make_client, SigningKeyError, load_client_configuration
 
@@ -55,6 +55,8 @@ class OnStarConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     return self.async_create_entry(title="Chevrolet OnStar Uruguay", data=values)
             except SigningKeyError:
                 errors["base"] = "client_key_error"
+            except OnStarAuthError:
+                errors["base"] = "invalid_auth"
             except OnStarError:
                 errors["base"] = "cannot_connect"
         return self.async_show_form(step_id="user", data_schema=vol.Schema({
@@ -115,6 +117,33 @@ class OnStarConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     async def async_step_import(self, user_input):
         return await self.async_step_user(user_input)
 
+    async def async_step_reauth(self, entry_data):
+        """Ask for a replacement password after an authentication failure."""
+        return await self.async_step_reauth_confirm()
+
+    async def async_step_reauth_confirm(self, user_input=None):
+        entry = self._get_reauth_entry()
+        errors = {}
+        if user_input is not None:
+            values = dict(entry.data, password=user_input["password"])
+            try:
+                client = self._client(values)
+                vehicles = await self.hass.async_add_executor_job(client.vehicles)
+                if not any(item.get("vin") == values.get("vin") for item in vehicles):
+                    errors["base"] = "select_vehicle"
+                else:
+                    return self.async_update_reload_and_abort(
+                        entry, data_updates={"password": values["password"]})
+            except SigningKeyError:
+                errors["base"] = "client_key_error"
+            except OnStarAuthError:
+                errors["base"] = "invalid_auth"
+            except OnStarError:
+                errors["base"] = "cannot_connect"
+        return self.async_show_form(step_id="reauth_confirm", data_schema=vol.Schema({
+            vol.Required("password"): TextSelector(TextSelectorConfig(type=TextSelectorType.PASSWORD)),
+        }), errors=errors)
+
     async def async_step_reconfigure(self, user_input=None):
         entry = self._get_reconfigure_entry()
         errors = {}
@@ -133,6 +162,8 @@ class OnStarConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     return self.async_update_reload_and_abort(entry, data_updates=values)
             except SigningKeyError:
                 errors["base"] = "client_key_error"
+            except OnStarAuthError:
+                errors["base"] = "invalid_auth"
             except OnStarError:
                 errors["base"] = "cannot_connect"
         return self.async_show_form(step_id="reconfigure", data_schema=vol.Schema({

@@ -29,6 +29,10 @@ class OnStarError(Exception):
     """A safe error message without account identifiers or response bodies."""
 
 
+class OnStarAuthError(OnStarError):
+    """The token endpoint rejected the stored credentials."""
+
+
 def _b64(value: bytes) -> str:
     return base64.urlsafe_b64encode(value).decode().rstrip("=")
 
@@ -132,7 +136,8 @@ class OnStarClient:
         status, body = self._request("/api/v1/oauth/token", sign_payload(payload, signing_key).encode())
         if status != 200:
             self._token = None
-            raise OnStarError(f"OnStar rechazó el acceso (HTTP {status})")
+            error_type = OnStarAuthError if status in (400, 401, 403) else OnStarError
+            raise error_type(f"OnStar rechazó el acceso (HTTP {status})")
         answer = decode_response(body)
         if not answer.get("access_token") or "onstar" not in answer.get("scope", "").split():
             self._token = None

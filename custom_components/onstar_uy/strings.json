@@ -46,17 +46,26 @@
             }
           }
         }
+      },
+      "reauth_confirm": {
+        "title": "Reauthenticate OnStar",
+        "description": "Enter the current password for your myChevrolet account.",
+        "data": {
+          "password": "Password"
+        }
       }
     },
     "error": {
       "cannot_connect": "Cannot connect to OnStar. Check credentials and connectivity. Changes were not saved.",
       "select_vehicle": "Select a vehicle from this account.",
       "no_vehicles": "No available vehicles were returned.",
-      "client_key_error": "Check the client ID, matching signing key and app version. A changed client ID requires its corresponding key."
+      "client_key_error": "Check the client ID, matching signing key and app version. A changed client ID requires its corresponding key.",
+      "invalid_auth": "OnStar rejected the credentials. Check your password."
     },
     "abort": {
       "single_instance_allowed": "Only one account is supported.",
-      "reconfigure_successful": "Configuration updated."
+      "reconfigure_successful": "Configuration updated.",
+      "reauth_successful": "Reauthentication successful."
     }
   }
 }
