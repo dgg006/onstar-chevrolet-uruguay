@@ -1,5 +1,12 @@
 # Cambios
 
+## 0.8.3
+
+- Los rechazos de autenticación detienen los reintentos y solicitan ingresar nuevamente la contraseña.
+- Reautenticación desde Home Assistant sin perder el vehículo ni los ajustes guardados.
+- Los problemas de conexión conservan sus reintentos y los vehículos ausentes muestran un error de configuración.
+- Pruebas de regresión para autenticación, inicio y actualización de datos.
+
 ## 0.8.2
 
 - Icono con emblema de Chevrolet en tamaños estándar y alta resolución.

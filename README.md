@@ -61,6 +61,8 @@ Las instalaciones anteriores conservan su configuración. También se admite el 
 
 En instalaciones nuevas, los datos se solicitan al vehículo cada 30 minutos. Las instalaciones existentes conservan su intervalo configurado. El botón **Actualizar datos** permite una solicitud manual. El servidor puede entregar información anterior: cada lectura conserva la fecha informada por el vehículo.
 
+Si OnStar rechaza las credenciales, Home Assistant detiene los reintentos automáticos y solicita ingresar nuevamente la contraseña. Se conservan el vehículo y los ajustes existentes. Los errores de conexión se reintentan sin solicitar otra contraseña.
+
 Desde **Reconfigurar** se puede cambiar la contraseña, el intervalo —mínimo 5 minutos— y la solicitud automática de datos nuevos. Si esta última se desactiva, se siguen consultando los datos guardados por GM y se conserva el botón de actualización manual.
 
 En **Configuración avanzada** se puede ajustar el identificador, la clave y la versión de la aplicación. Cambiar el identificador exige ingresar su clave correspondiente. La clave se muestra oculta y vacía en el formulario: dejarla vacía conserva la actual. Antes de guardar se valida el acceso y que el vehículo siga perteneciendo a la cuenta, sin enviar comandos. Si falla, la configuración anterior permanece intacta. El icono del auto está incluido en la integración.

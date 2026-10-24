@@ -25,6 +25,9 @@ class ConfigFlowTests(unittest.IsolatedAsyncioTestCase):
             def async_abort(self, **kwargs):
                 return {'type': 'abort', **kwargs}
 
+            def _get_reauth_entry(self):
+                return self.entry
+
             def _get_reconfigure_entry(self):
                 return self.entry
 
@@ -47,6 +50,8 @@ class ConfigFlowTests(unittest.IsolatedAsyncioTestCase):
         package.DOMAIN = 'onstar_uy'
         client = types.ModuleType('flow_test_package.client')
         client.OnStarError = RuntimeError
+        client.OnStarAuthError = type("OnStarAuthError", (RuntimeError,), {})
+        self.auth_error = client.OnStarAuthError
         self.vehicles = []
         self.client_args = None
 
@@ -140,3 +145,42 @@ class ConfigFlowTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(result['reason'],'reconfigure_successful')
         self.assertEqual(self.flow.saved_updates['app_version'],'8.11.0')
         self.assertTrue(self.flow.saved_updates['client_configuration_override'])
+
+    async def test_reauth_password_only_and_preserves_settings(self):
+        original = {'username':'test@example.invalid','password':'old', 'device_id':'test-device',
+                    'client_id':'test-app-id','vin':'FAKE-VEHICLE-A','scan_interval':1800}
+        self.flow.entry = types.SimpleNamespace(data=dict(original))
+        form = await self.flow.async_step_reauth(original)
+        self.assertEqual(form['step_id'], 'reauth_confirm')
+        self.assertEqual(set(form['data_schema']), {'password'})
+        self.flow.hass.async_add_executor_job.assert_not_awaited()
+        self.vehicles = [{'vin':'FAKE-VEHICLE-A'}]
+        result = await self.flow.async_step_reauth_confirm({'password':'new'})
+        self.assertEqual(result['type'], 'abort')
+        self.assertEqual(self.flow.saved_updates, {'password':'new'})
+        self.assertEqual(self.flow.entry.data, original)
+
+    async def test_reauth_failures_do_not_save(self):
+        self.flow.entry = types.SimpleNamespace(data={'username':'test@example.invalid','password':'old',
+             'device_id':'test-device','client_id':'test-app-id','vin':'FAKE-VEHICLE-A'})
+        for error, expected in [(self.auth_error('Rejected'), 'invalid_auth'),
+                                (RuntimeError('Offline'), 'cannot_connect')]:
+            with self.subTest(expected=expected):
+                self.flow.hass.async_add_executor_job.side_effect = error
+                result = await self.flow.async_step_reauth_confirm({'password':'new'})
+                self.assertEqual(result['errors'], {'base':expected})
+                self.assertFalse(hasattr(self.flow, 'saved_updates'))
+                self.assertEqual(self.flow.entry.data['password'], 'old')
+
+    async def test_reauth_missing_vehicle_does_not_save(self):
+        self.flow.entry = types.SimpleNamespace(data={'username':'test@example.invalid','password':'old',
+             'device_id':'test-device','client_id':'test-app-id','vin':'FAKE-VEHICLE-A'})
+        self.vehicles = [{'vin':'FAKE-VEHICLE-B'}]
+        result = await self.flow.async_step_reauth_confirm({'password':'new'})
+        self.assertEqual(result['errors'], {'base':'select_vehicle'})
+        self.assertFalse(hasattr(self.flow,'saved_updates'))
+
+    async def test_onboarding_rejected_password_is_invalid_auth(self):
+        self.flow.hass.async_add_executor_job.side_effect = self.auth_error('Rejected')
+        result = await self.flow.async_step_user({'username':'test@example.invalid','password':'bad'})
+        self.assertEqual(result['errors'], {'base':'invalid_auth'})
