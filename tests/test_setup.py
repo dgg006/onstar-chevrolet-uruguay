@@ -52,6 +52,8 @@ class SetupTests(unittest.IsolatedAsyncioTestCase):
             health=lambda vin: {}, extra_readings=lambda vin: {}, location=lambda vin: None)
         credentials = types.ModuleType('setup_test_package.credentials')
         credentials.KEY_FILENAME = 'test.json'
+        credentials.SigningKeyError = type('SigningKeyError', (self.network_error,), {})
+        self.signing_error = credentials.SigningKeyError
         credentials.make_client = lambda *args: self.client
         spec = importlib.util.spec_from_file_location('setup_test_package', ROOT / '__init__.py', submodule_search_locations=[str(ROOT)])
         self.module = importlib.util.module_from_spec(spec)
@@ -102,3 +104,10 @@ class SetupTests(unittest.IsolatedAsyncioTestCase):
         self.client.health = lambda vin: (_ for _ in ()).throw(self.network_error('Offline'))
         with self.assertRaises(self.update_failed):
             await self.module.async_setup_entry(self.hass,self.entry)
+
+    async def test_invalid_client_configuration_does_not_retry(self):
+        self.client.vehicles = lambda: (_ for _ in ()).throw(self.signing_error('Invalid client'))
+        with self.assertRaises(self.entry_error) as raised:
+            await self.module.async_setup_entry(self.hass, self.entry)
+        self.assertNotIsInstance(raised.exception, self.not_ready)
+        self.assertNotIsInstance(raised.exception, self.auth_failed)

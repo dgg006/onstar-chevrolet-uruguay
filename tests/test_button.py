@@ -5,7 +5,7 @@ from pathlib import Path
 import sys
 import types
 import unittest
-from unittest.mock import AsyncMock, patch
+from unittest.mock import AsyncMock, Mock, patch
 
 
 class ButtonTests(unittest.IsolatedAsyncioTestCase):
@@ -29,6 +29,7 @@ class ButtonTests(unittest.IsolatedAsyncioTestCase):
         exceptions.HomeAssistantError = RuntimeError
         client_module = types.ModuleType('button_test_package.client')
         client_module.OnStarError = RuntimeError
+        client_module.OnStarAuthError = type("OnStarAuthError", (RuntimeError,), {})
         path = Path(__file__).resolve().parents[1] / 'custom_components/onstar_uy/button.py'
         spec = importlib.util.spec_from_file_location('button_test_package.button', path)
         module = importlib.util.module_from_spec(spec)
@@ -50,7 +51,7 @@ class ButtonTests(unittest.IsolatedAsyncioTestCase):
             lock = asyncio.Lock()
             await lock.acquire()
             state = {'client': types.SimpleNamespace(control=lambda *args: 'SUCCESS'),
-                     'vin': 'test-vin', 'control_lock': lock}
+                     'vin': 'test-vin', 'control_lock': lock, 'entry': types.SimpleNamespace(async_start_reauth=Mock())}
             activate = module.OnStarControlButton(state, 'honk', 'Bocina', 'mdi:bullhorn')
             with self.assertRaisesRegex(RuntimeError, 'en curso'):
                 await activate.async_press()
@@ -61,3 +62,12 @@ class ButtonTests(unittest.IsolatedAsyncioTestCase):
             stop.hass.async_add_executor_job.assert_awaited_once()
             self.assertEqual(stop.extra_state_attributes['resultado_ultimo_comando'], 'SUCCESS')
             lock.release()
+
+            for error, reauth in [(client_module.OnStarAuthError('Rejected'), True),
+                                   (RuntimeError('Offline'), False)]:
+                state['entry'].async_start_reauth.reset_mock()
+                stop.hass.async_add_executor_job = AsyncMock(side_effect=error)
+                with self.assertRaises(RuntimeError):
+                    await stop.async_press()
+                stop.hass.async_add_executor_job.assert_awaited_once()
+                self.assertEqual(state['entry'].async_start_reauth.called, reauth)

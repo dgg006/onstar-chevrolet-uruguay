@@ -4,7 +4,7 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from homeassistant.exceptions import HomeAssistantError
 
 from . import DOMAIN
-from .client import OnStarError
+from .client import OnStarAuthError, OnStarError
 
 CONTROL_BUTTONS = (
     ("lock", "Bloquear puertas", "mdi:lock"),
@@ -28,6 +28,7 @@ class OnStarControlButton(ButtonEntity):
 
     def __init__(self, state, action, name, icon):
         self._client = state["client"]
+        self._entry = state["entry"]
         self._vin = state["vin"]
         self._action = action
         self._control_lock = state["control_lock"]
@@ -52,6 +53,10 @@ class OnStarControlButton(ButtonEntity):
                 async with self._control_lock:
                     self._result = await self.hass.async_add_executor_job(
                         self._client.control, self._vin, self._action)
+        except OnStarAuthError as error:
+            self._result = "AUTENTICACION_REQUERIDA"
+            self._entry.async_start_reauth(self.hass)
+            raise HomeAssistantError("Ingresá nuevamente la contraseña de OnStar") from error
         except OnStarError as error:
             self._result = "NO_CONFIRMADO"
             raise HomeAssistantError(str(error)) from error

@@ -2,6 +2,10 @@
 
 ## 0.8.3
 
+- Los botones solicitan reautenticación si el inicio de sesión es rechazado, sin repetir comandos.
+- Una configuración de cliente inválida al iniciar muestra un error permanente en lugar de reintentarse.
+- Prueba del formulario y actualización de credenciales con Home Assistant 2026.10.0.
+
 - Los rechazos de autenticación detienen los reintentos y solicitan ingresar nuevamente la contraseña.
 - Reautenticación desde Home Assistant sin perder el vehículo ni los ajustes guardados.
 - Los problemas de conexión conservan sus reintentos y los vehículos ausentes muestran un error de configuración.
