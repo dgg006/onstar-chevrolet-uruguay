@@ -98,6 +98,20 @@ Eliminar la entrada de OnStar Chevrolet Uruguay en Ajustes → Dispositivos y se
 
 Copiar `custom_components/onstar_uy` a la carpeta `custom_components` de Home Assistant, reiniciar y agregar la integración desde la interfaz.
 
+## Reconocimientos
+
+Durante el desarrollo se consultaron estos proyectos para contrastar rutas de la API, formatos de comandos, seguimiento de solicitudes, tiempos de espera y límites de consulta:
+
+- [BigThunderSR/OnStarJS](https://github.com/BigThunderSR/OnStarJS): referencia técnica sobre comandos y respuestas de OnStar.
+- [BigThunderSR/onstar2mqtt](https://github.com/BigThunderSR/onstar2mqtt): referencia sobre el funcionamiento de las consultas, las demoras y los límites del servicio.
+- [samrum/OnStarJS](https://github.com/samrum/OnStarJS): biblioteca original y antecedente del trabajo comunitario sobre la API.
+
+Gracias a sus autores y colaboradores por compartir su trabajo y documentar el comportamiento de OnStar. La investigación de la autenticación y del servicio regional uruguayo se realizó también mediante el análisis de myChevrolet y comprobaciones con un vehículo real.
+
+### Asistencia de IA
+
+Esta integración se desarrolló con asistencia de **ChatGPT (OpenAI)** para investigar el protocolo regional, escribir y revisar código, preparar pruebas y redactar documentación. Las comprobaciones de los controles con el vehículo real se realizaron con la colaboración de su propietario.
+
 ## Privacidad y soporte
 
 Las credenciales personales se guardan en la configuración de tu Home Assistant y se envían a GM mediante HTTPS. Los tokens se conservan en memoria. No se registran contraseñas, tokens ni cuerpos de respuesta.
